@@ -1,5 +1,6 @@
 import React from "react";
 import Cards from "./cards";
+import axios from "axios";
 
 class TextArea extends React.Component {
   state = {
@@ -10,22 +11,38 @@ class TextArea extends React.Component {
     editText: false,
   };
 
+  async componentDidMount() {
+    const api = axios.create({
+      baseURL: `http://localhost:3000/getList`,
+    });
+
+    let todoList = await api.get(`/`).then((res) => res.data);
+    console.log(todoList.data);
+    this.setState({
+      todoList: todoList.data,
+    });
+  }
+
   handleInput = (e) => {
+    console.log(this.state.todoList);
     this.setState({
       [e.target.name]: e.target.value,
     });
   };
 
   deleteText = (key) => {
-    let items = this.state.todoList;
-    items.map((items) => {
-      if (key === items.key)
+    let todos = this.state.todoList;
+    todos.map((items) => {
+      if (key === items.key) {
         this.setState({
-          todoList: this.state.todoList.filter((data) => {
+          todoList: todos.filter((data) => {
             return data.key !== key;
           }),
         });
+      }
+      console.log(this.state.todoList);
     });
+    console.log(this.state.todoList);
   };
 
   editText = (key, text, date) => {
@@ -61,6 +78,7 @@ class TextArea extends React.Component {
               todoList: todos,
               editText: false,
             });
+            this.postData();
           }
         });
       } else {
@@ -81,10 +99,28 @@ class TextArea extends React.Component {
           date: "",
           key: Date.now(),
         });
+        console.log(this.state.todoList);
+
+        console.log("i worked");
       } else {
         alert("Input Field Or Date Field Is Empty");
       }
     }
+  };
+
+  postData = async () => {
+    await axios
+      .post(`http://localhost:3000/addList`, {
+        todoList: this.state.todoList,
+      })
+      .then(
+        (response) => {
+          console.log(response.data);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
   };
 
   render() {
@@ -117,6 +153,13 @@ class TextArea extends React.Component {
               value={this.state.date}
               onChange={this.handleInput}
             ></input>
+            <button
+              className="btn btn-primary my-30"
+              type="submit"
+              onClick={this.addItem}
+            >
+              Submit
+            </button>
           </div>
         </div>
         <hr />
@@ -124,6 +167,7 @@ class TextArea extends React.Component {
         <hr />
         {this.state.todoList.map((items) => {
           console.log(items);
+          this.postData();
           return (
             <Cards name={items} delete={this.deleteText} edit={this.editText} />
           );
@@ -132,21 +176,5 @@ class TextArea extends React.Component {
     );
   }
 }
-
-// function postData(Todos) {
-//   let todoList = {
-//     todoList: Todos,
-//   };
-
-//   fetch("http://localhost:3000/addList", {
-//     method: "POST",
-//     body: JSON.stringify(todoList),
-//     headers: {
-//       "Content-type": "application/json",
-//     },
-//   })
-//     .then((data) => data.json())
-//     .then((json) => console.log(json));
-// }
 
 export default TextArea;

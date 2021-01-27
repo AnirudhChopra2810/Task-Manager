@@ -2,12 +2,15 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const staticPath = path.join(__dirname, "../client/build");
-// const staticPath2 = path.join(__dirname, "./login");
 const fs = require("fs");
 const bodyParser = require("body-parser");
+const FILE_PATH = "./list.file";
+
+const cors = require("cors");
+app.use(cors());
+// const staticPath2 = path.join(__dirname, "./login");
 //const bcrypt = require("bcrypt");
 
-const FILE_PATH = "./list.file";
 //const FILE_PATH2 = "./users.file";
 
 //let arr = JSON.parse(fs.readFileSync(FILE_PATH2, "utf-8"));
@@ -75,7 +78,10 @@ app.post("/addList", (req, res) => {
   try {
     const { todoList } = req.body;
     fs.writeFileSync(FILE_PATH, JSON.stringify(todoList));
-    return res.send({ success: true, message: "List updated successfully" }); // default status is 200
+    return res.send({
+      success: true,
+      message: "List updated successfully and i worked ",
+    }); // default status is 200
   } catch (error) {
     console.log(error);
     return res.status(500).send("Oops something broke! :(");
