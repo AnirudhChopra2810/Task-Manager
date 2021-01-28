@@ -32,16 +32,18 @@ class TextArea extends React.Component {
 
   deleteText = (key) => {
     let todos = this.state.todoList;
-    todos.map((items) => {
+    todos.map(async (items) => {
       if (key === items.key) {
-        this.setState({
+        await this.setState({
           todoList: todos.filter((data) => {
             return data.key !== key;
           }),
         });
       }
       console.log(this.state.todoList);
+      this.postData();
     });
+    alert("Successfully Deleted");
     console.log(this.state.todoList);
   };
 
@@ -55,7 +57,6 @@ class TextArea extends React.Component {
   };
 
   addItem = (event) => {
-    event.preventDefault();
     console.log(this.state.key);
 
     //For editing the text.
@@ -106,10 +107,14 @@ class TextArea extends React.Component {
         alert("Input Field Or Date Field Is Empty");
       }
     }
+    event.preventDefault();
   };
 
-  postData = async () => {
-    await axios
+  postData = () => {
+    console.log(this.state.todoList);
+    let todos = this.state.todoList;
+    console.log(todos);
+    axios
       .post(`http://localhost:3000/addList`, {
         todoList: this.state.todoList,
       })
