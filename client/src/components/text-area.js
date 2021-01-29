@@ -17,14 +17,12 @@ class TextArea extends React.Component {
     });
 
     let todoList = await api.get(`/`).then((res) => res.data);
-    console.log(todoList.data);
     this.setState({
       todoList: todoList.data,
     });
   }
 
   handleInput = (e) => {
-    console.log(this.state.todoList);
     this.setState({
       [e.target.name]: e.target.value,
     });
@@ -32,17 +30,17 @@ class TextArea extends React.Component {
 
   deleteText = (key) => {
     let todos = this.state.todoList;
-    todos.map(async (items) => {
+    todos.map((items) => {
       if (key === items.key) {
-        await this.setState({
+        this.setState({
           todoList: todos.filter((data) => {
             return data.key !== key;
           }),
         });
       }
-      console.log(this.state.todoList);
-      this.postData();
     });
+    this.componentDidUpdate();
+
     alert("Successfully Deleted");
     console.log(this.state.todoList);
   };
@@ -79,7 +77,6 @@ class TextArea extends React.Component {
               todoList: todos,
               editText: false,
             });
-            this.postData();
           }
         });
       } else {
@@ -100,9 +97,7 @@ class TextArea extends React.Component {
           date: "",
           key: Date.now(),
         });
-        console.log(this.state.todoList);
-
-        console.log("i worked");
+        this.componentDidUpdate();
       } else {
         alert("Input Field Or Date Field Is Empty");
       }
@@ -110,7 +105,7 @@ class TextArea extends React.Component {
     event.preventDefault();
   };
 
-  postData = () => {
+  componentDidUpdate() {
     console.log(this.state.todoList);
     let todos = this.state.todoList;
     console.log(todos);
@@ -126,7 +121,7 @@ class TextArea extends React.Component {
           console.log(error);
         }
       );
-  };
+  }
 
   render() {
     return (
@@ -172,7 +167,6 @@ class TextArea extends React.Component {
         <hr />
         {this.state.todoList.map((items) => {
           console.log(items);
-          this.postData();
           return (
             <Cards name={items} delete={this.deleteText} edit={this.editText} />
           );
