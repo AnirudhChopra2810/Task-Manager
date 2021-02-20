@@ -1,179 +1,245 @@
-import React from "react";
-import Cards from "./cards";
+import React, { useContext, useState, useEffect } from "react";
+import NavBar from "./nav-bar";
 import axios from "axios";
+import InputField from "../common-styling/textarea";
+import Buttons from "../common-styling/button";
+import Lists from "../common-styling/list";
+import { Divider } from "../../node_modules/semantic-ui-react";
+import Image from "../common-styling/image";
+import image from "../shopping-list.svg";
+import { CredentialsContext } from "../components/app";
+import Card from "react-bootstrap/Card";
+import Button from "react-bootstrap/Button";
+import uuid from "react-uuid";
 
-class TextArea extends React.Component {
-  state = {
-    todoList: [],
-    text: "",
-    date: "",
-    key: Date.now(),
-    editText: false,
-  };
+const TextArea = () => {
+  const [credentials] = useContext(CredentialsContext);
+  const [todoList, setTodoList] = useState([]);
+  const [Todo, setTodoText] = useState("");
+  const [Key, setKey] = useState(credentials.id);
 
-  async componentDidMount() {
-    const api = axios.create({
-      baseURL: `http://localhost:3000/getList`,
-    });
+  useEffect(async () => {
+    const url = `http://localhost:3000/getList`;
 
-    let todoList = await api.get(`/`).then((res) => res.data);
-    this.setState({
-      todoList: todoList.data,
-    });
-  }
+    const token = localStorage.getItem("token");
+    console.log(token);
 
-  handleInput = (e) => {
-    this.setState({
-      [e.target.name]: e.target.value,
-    });
-  };
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
 
-  deleteText = (key) => {
-    let todos = this.state.todoList;
-    todos.map((items) => {
-      if (key === items.key) {
-        this.setState({
-          todoList: todos.filter((data) => {
-            return data.key !== key;
-          }),
-        });
-      }
-    });
-    this.componentDidUpdate();
+    const bodyParameters = {
+      key: credentials.id,
+    };
 
-    alert("Successfully Deleted");
-    console.log(this.state.todoList);
-  };
+    console.log("i worked 4");
 
-  editText = (key, text, date) => {
-    this.setState({
-      text: text,
-      date: date,
-      key: key,
-      editText: true,
-    });
-  };
-
-  addItem = (event) => {
-    console.log(this.state.key);
-
-    //For editing the text.
-    if (this.state.editText === true) {
-      if (this.state.text !== "" && this.state.date !== "") {
-        let todos = this.state.todoList;
-        todos.map((items) => {
-          if (this.state.key === items.key) {
-            const updatedItem = {
-              text: this.state.text,
-              date: this.state.date,
-              key: this.state.key,
-            };
-            let indexOf = todos.findIndex((items) => {
-              return items.key === this.state.key;
-            });
-            todos[indexOf] = updatedItem;
-
-            this.setState({
-              todoList: todos,
-              editText: false,
-            });
-          }
-        });
-      } else {
-        alert("Input Field Or Date Field Is Empty");
-      }
+    if (todoList === undefined) {
+      setTodoList([]);
     } else {
-      //for adding new card.
-      if (this.state.text !== "" && this.state.date) {
-        const newItem = {
-          text: this.state.text,
-          date: this.state.date,
-          key: this.state.key,
-        };
-
-        this.setState({
-          todoList: [...this.state.todoList, newItem],
-          text: "",
-          date: "",
-          key: Date.now(),
-        });
-        this.componentDidUpdate();
-      } else {
-        alert("Input Field Or Date Field Is Empty");
-      }
+      let todoList = await axios.get(url, config).then((res) => {
+        setTodoList(res.data.Todo);
+      });
     }
-    event.preventDefault();
+  }, []);
+
+  // deleteText = (Key) => {
+  //   let todos = this.state.todoList;
+  //   todos.map((items) => {
+  //     if (Key === items.Key) {
+  //       this.setState({
+  //         todoList: todos.filter((data) => {
+  //           return data.Key !== Key;
+  //         }),
+  //       });
+  //       // axios.post(`http://localhost:3000/deleteList`, { Key: items.Key }).then(
+  //       //   (response) => {
+  //       //     console.log(response.data);
+  //       //   },
+  //       //   (error) => {
+  //       //     console.log(error);
+  //       //   }
+  //       // );
+  //     }
+  //   });
+
+  //   alert("Successfully Deleted");
+  //   console.log(this.state.todoList);
+  // };
+
+  // editText = (key, text, date) => {
+  //   this.setState({
+  //     Todo: text,
+  //     Date: date,
+  //     Key: key,
+  //     editText: true,
+  //   });
+  // };
+
+  const postTodo = (newItem) => {
+    const token = localStorage.getItem("token");
+
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+
+    axios.post(`http://localhost:3000/addList`, newItem, config).then(
+      (response) => {
+        console.log(credentials.id);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
   };
 
-  componentDidUpdate() {
-    console.log(this.state.todoList);
-    let todos = this.state.todoList;
-    console.log(todos);
-    axios
-      .post(`http://localhost:3000/addList`, {
-        todoList: this.state.todoList,
-      })
-      .then(
-        (response) => {
-          console.log(response.data);
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
-  }
+  const logout = () => {
+    localStorage.clear();
+  };
 
-  render() {
-    return (
-      <div className="contaner my-4">
-        <h1 className="headText mx-3">Welcome To Task Manager</h1>
-        <div className="cardContainer" id="addCard">
-          <div className="card-body my-4">
-            <h5 className="card-title ">Add a note</h5>
-            <div className="form-group">
-              <textarea
-                className="form-control"
-                name="text"
-                value={this.state.text}
-                onChange={this.handleInput}
-              ></textarea>
-            </div>
-            <button
-              className="btn btn-primary my-2"
-              type="submit"
-              onClick={this.addItem}
-            >
-              {this.state.editText ? `Save Note` : `Add Note`}
-            </button>
-            <input
-              className="dateTime mx-2"
-              name="date"
-              type="datetime-local"
-              id="myDate"
-              value={this.state.date}
-              onChange={this.handleInput}
-            ></input>
-            <button
-              className="btn btn-primary my-30"
-              type="submit"
-              onClick={this.addItem}
-            >
-              Submit
-            </button>
-          </div>
-        </div>
-        <hr />
-        <h1 className="cardArea mx-4">Your Notes</h1>
-        <hr />
-        {this.state.todoList.map((items) => {
+  const addItem = (event) => {
+    event.preventDefault();
+
+    //for adding new card.
+
+    if (!Todo) {
+      return alert("Input Field Or Date Field Is Empty");
+    }
+
+    console.log("i worked");
+
+    const newItem = { Todo: Todo, Key: credentials.id };
+    console.log(newItem);
+    const newTodoList = [...todoList, newItem];
+    setTodoList(newTodoList);
+    setTodoText("");
+    postTodo(newItem);
+  };
+
+  return (
+    <div>
+      <NavBar />
+      <div>
+        <h3
+          style={{
+            color: "grey",
+            position: "absolute",
+            top: "75px",
+            left: "20px",
+          }}
+        >
+          Add Your Notes Here!!
+        </h3>
+      </div>
+      <div className="form-group">
+        <InputField
+          value={Todo}
+          className="form-control"
+          placeholder="--> Write Something... <--"
+          onChange={(el) => {
+            setTodoText(el.target.value);
+          }}
+        ></InputField>
+      </div>
+      <Buttons type="submit" onClick={addItem}>
+        {/* {this.state.editText ? `Save Note` : */} Add Note
+      </Buttons>
+      <Buttons onClick={logout}>
+        {/* {this.state.editText ? `Save Note` : */} Logout
+      </Buttons>
+
+      <Lists>
+        {todoList.map((items) => {
           console.log(items);
           return (
-            <Cards name={items} delete={this.deleteText} edit={this.editText} />
+            <Card
+              key={uuid()}
+              className="noteCard mx-4 my-4 "
+              style={{ width: "700px", backgroundColor: "#a6a6a6" }}
+            >
+              <Card.Body>
+                <Card.Title>Note</Card.Title>
+                <hr />
+                <Card.Text>{items.Todo}</Card.Text>
+
+                <Button variant="primary">Delete</Button>
+                <Button variant="primary mx-2">Edit</Button>
+              </Card.Body>
+            </Card>
           );
         })}
-      </div>
-    );
-  }
-}
+      </Lists>
+
+      <Divider
+        vertical
+        style={{
+          color: "grey",
+          position: "absolute",
+          height: "290px",
+          left: "450px",
+          top: "55%",
+          bottom: "40%",
+        }}
+      >
+        <Image
+          src={image}
+          style={{
+            height: "40px",
+            position: "relative",
+            left: "1px",
+            top: "-20px",
+          }}
+        />
+      </Divider>
+    </div>
+  );
+};
+
+// delete={this.deleteText} edit={this.editText}
+
+// {/* <button
+//           className="btn btn-primary my-2"
+//           type="submit"
+//           onClick={this.addItem}
+//         >
+//           {this.state.editText ? `Save Note` : `Add Note`}
+//         </button> */}
+//           {/* <input
+//           className="dateTime mx-2"
+//           name="date"
+//           type="datetime-local"
+//           id="myDate"
+//           value={this.state.date}
+//           onChange={this.handleInput}
+//         ></input> */}
+
+//   //For editing the text.
+//   if (this.state.editText === true) {
+//     if (this.state.text !== "") {
+//       let todos = this.state.todoList;
+//       todos.map((items) => {
+//         if (this.state.key === items.key) {
+//           const updatedItem = {
+//             Todo: this.state.Todo,
+//             Date: this.state.Date,
+//             Key: this.state.Key,
+//           };
+//           let indexOf = todos.findIndex((items) => {
+//             return items.Key === this.state.Key;
+//           });
+//           todos[indexOf] = updatedItem;
+
+//           this.setState({
+//             todoList: todos,
+//             editText: false,
+//           });
+
+//
+//         }
+//       });
+//     } else {
+//       alert("Input Field Or Date Field Is Empty");
+//     }
+//   } else
 
 export default TextArea;
