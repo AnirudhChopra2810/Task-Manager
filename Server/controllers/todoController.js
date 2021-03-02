@@ -34,10 +34,21 @@ exports.addTodo = async (req, res) => {
 
 exports.updateTodo = async (req, res) => {
   try {
-    const updateTodo = await Todo.findOneAndUpdate(
-      { Key: req.body.Key },
-      req.body
-    );
+    const token = req.headers.authorization.split(" ")[1];
+
+    console.log(token);
+    const verify = await jwt.verify(JSON.parse(token), process.env.JWT_SECRET);
+
+    if (!verify) return res.send("invalid Token");
+
+    const user = await User.findOne({ _id: verify.id });
+
+    if (!user) return res.send("User not found");
+
+    const updateTodo = await Todo.findOneAndUpdate({
+      Key: verify.id,
+      Todo: req.body.Todo,
+    });
     return res.send({ success: true, message: "List updated successfully" });
   } catch (error) {
     console.log(error);
@@ -47,8 +58,25 @@ exports.updateTodo = async (req, res) => {
 
 exports.deleteTodo = async (req, res) => {
   try {
+    console.log(req.headers);
+    const token = req.headers.authorization.split(" ")[1];
+
+    console.log(token);
+    const verify = await jwt.verify(JSON.parse(token), process.env.JWT_SECRET);
+
+    if (!verify) return res.send("invalid Token");
+
+    const user = await User.findOne({ _id: verify.id });
+
+    if (!user) return res.send("User not found");
     console.log(req.body.Key);
-    const deleteTodo = await Todo.findOneAndDelete({ Key: req.body.Key });
+
+    console.log(req.body.Todo);
+
+    const deleteTodo = await Todo.findOneAndDelete({
+      Key: verify.id,
+      Todo: req.body.Todo,
+    });
     return res.send({ success: true, message: "successfully deleted" });
   } catch (error) {
     console.log(error);
@@ -73,6 +101,8 @@ exports.getTodo = async (req, res) => {
     if (!user) return res.send("User not found");
 
     const todo = await Todo.find({ Key: verify.id });
+
+    console.log(todo);
 
     res.send({
       Todo: todo,

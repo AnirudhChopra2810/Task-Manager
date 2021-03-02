@@ -16,7 +16,8 @@ const TextArea = () => {
   const [credentials] = useContext(CredentialsContext);
   const [todoList, setTodoList] = useState([]);
   const [Todo, setTodoText] = useState("");
-  const [Key, setKey] = useState(credentials.id);
+  const [edit, setEditText] = useState(false);
+  const [Index, setIndex] = useState(0);
 
   useEffect(async () => {
     const url = `http://localhost:3000/getList`;
@@ -26,10 +27,6 @@ const TextArea = () => {
 
     const config = {
       headers: { Authorization: `Bearer ${token}` },
-    };
-
-    const bodyParameters = {
-      key: credentials.id,
     };
 
     console.log("i worked 4");
@@ -43,38 +40,63 @@ const TextArea = () => {
     }
   }, []);
 
-  // deleteText = (Key) => {
-  //   let todos = this.state.todoList;
-  //   todos.map((items) => {
-  //     if (Key === items.Key) {
-  //       this.setState({
-  //         todoList: todos.filter((data) => {
-  //           return data.Key !== Key;
-  //         }),
-  //       });
-  //       // axios.post(`http://localhost:3000/deleteList`, { Key: items.Key }).then(
-  //       //   (response) => {
-  //       //     console.log(response.data);
-  //       //   },
-  //       //   (error) => {
-  //       //     console.log(error);
-  //       //   }
-  //       // );
-  //     }
-  //   });
+  const deleteText = (Todo) => {
+    console.log(Todo);
 
-  //   alert("Successfully Deleted");
-  //   console.log(this.state.todoList);
-  // };
+    todoList.map((items) => {
+      if (Todo === items.Todo) {
+        setTodoList(
+          todoList.filter((data) => {
+            return data.Todo !== Todo;
+          })
+        );
 
-  // editText = (key, text, date) => {
-  //   this.setState({
-  //     Todo: text,
-  //     Date: date,
-  //     Key: key,
-  //     editText: true,
-  //   });
-  // };
+        const token = localStorage.getItem("token");
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
+        axios
+          .post(
+            `http://localhost:3000/DeleteList`,
+            {
+              Key: credentials.id,
+              Todo: items.Todo,
+            },
+            config
+          )
+          .then(
+            (response) => {
+              console.log(response.data);
+            },
+            (error) => {
+              console.log(error);
+            }
+          );
+      }
+    });
+
+    alert("Successfully Deleted");
+  };
+
+  const editText = (Todo) => {
+    //For editing the text.
+
+    setTodoText(Todo);
+    setEditText(true);
+    todoList.map((items) => {
+      if (Todo === items.Todo) {
+        setIndex(
+          todoList.findIndex((items) => {
+            return items.Todo === Todo;
+          })
+        );
+      }
+    });
+  };
 
   const postTodo = (newItem) => {
     const token = localStorage.getItem("token");
@@ -93,27 +115,57 @@ const TextArea = () => {
     );
   };
 
-  const logout = () => {
-    localStorage.clear();
-  };
-
-  const addItem = (event) => {
-    event.preventDefault();
-
+  const addItem = (e) => {
+    e.preventDefault();
     //for adding new card.
 
     if (!Todo) {
       return alert("Input Field Or Date Field Is Empty");
     }
 
-    console.log("i worked");
+    if (edit === false) {
+      console.log("i worked");
 
-    const newItem = { Todo: Todo, Key: credentials.id };
-    console.log(newItem);
-    const newTodoList = [...todoList, newItem];
-    setTodoList(newTodoList);
-    setTodoText("");
-    postTodo(newItem);
+      const newItem = { Todo: Todo, Key: credentials.id };
+      console.log(newItem);
+      const newTodoList = [...todoList, newItem];
+      setTodoList(newTodoList);
+      setTodoText("");
+      postTodo(newItem);
+      return;
+    } else {
+      if (Todo !== "") {
+        console.log(todoList);
+        const updatedItem = {
+          Todo: Todo,
+          key: credentials.id,
+        };
+        let todos = todoList;
+        todos[Index] = updatedItem;
+        setTodoList(todos);
+        setTodoText("");
+        setEditText(false);
+
+        const token = localStorage.getItem("token");
+
+        const config = {
+          headers: { Authorization: `Bearer ${token}` },
+        };
+
+        axios
+          .post(`http://localhost:3000/updateList`, updatedItem, config)
+          .then(
+            (response) => {
+              console.log(credentials.id);
+            },
+            (error) => {
+              console.log(error);
+            }
+          );
+      } else {
+        alert("Input Field Or Date Field Is Empty");
+      }
+    }
   };
 
   return (
@@ -141,12 +193,23 @@ const TextArea = () => {
           }}
         ></InputField>
       </div>
-      <Buttons type="submit" onClick={addItem}>
-        {/* {this.state.editText ? `Save Note` : */} Add Note
-      </Buttons>
-      <Buttons onClick={logout}>
-        {/* {this.state.editText ? `Save Note` : */} Logout
-      </Buttons>
+
+      <div>
+        <Button
+          style={{
+            height: "40px",
+            width: "100px",
+            position: "absolute",
+            top: "180px",
+            left: "20px",
+          }}
+          type="submit"
+          variant="secondary"
+          onClick={addItem}
+        >
+          {edit ? `Save Note` : `Add Note`}
+        </Button>
+      </div>
 
       <Lists>
         {todoList.map((items) => {
@@ -155,15 +218,35 @@ const TextArea = () => {
             <Card
               key={uuid()}
               className="noteCard mx-4 my-4 "
-              style={{ width: "700px", backgroundColor: "#a6a6a6" }}
+              style={{ width: "700px", backgroundColor: "#3d3e40" }}
+              name={Todo}
             >
               <Card.Body>
-                <Card.Title>Note</Card.Title>
+                <Card.Title style={{ color: "white" }}>Note</Card.Title>
                 <hr />
-                <Card.Text>{items.Todo}</Card.Text>
+                <Card.Text style={{ color: "white" }}>{items.Todo}</Card.Text>
 
-                <Button variant="primary">Delete</Button>
-                <Button variant="primary mx-2">Edit</Button>
+                <Button
+                  variant="secondary"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    let name = items.Todo;
+                    deleteText(name);
+                  }}
+                >
+                  Delete
+                </Button>
+                <Button
+                  variant="secondary mx-3"
+                  style={{ width: "70px" }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    let name = items.Todo;
+                    editText(name);
+                  }}
+                >
+                  Edit
+                </Button>
               </Card.Body>
             </Card>
           );
@@ -194,25 +277,6 @@ const TextArea = () => {
     </div>
   );
 };
-
-// delete={this.deleteText} edit={this.editText}
-
-// {/* <button
-//           className="btn btn-primary my-2"
-//           type="submit"
-//           onClick={this.addItem}
-//         >
-//           {this.state.editText ? `Save Note` : `Add Note`}
-//         </button> */}
-//           {/* <input
-//           className="dateTime mx-2"
-//           name="date"
-//           type="datetime-local"
-//           id="myDate"
-//           value={this.state.date}
-//           onChange={this.handleInput}
-//         ></input> */}
-
 //   //For editing the text.
 //   if (this.state.editText === true) {
 //     if (this.state.text !== "") {

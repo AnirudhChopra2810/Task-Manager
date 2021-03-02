@@ -1,0 +1,58 @@
+/* .Password {
+  position: absolute;
+  right: 540px;
+  top: 200px;
+  margin: 10px;
+  height: 30px;
+  width: 200px;
+} */
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #2e2e2e, #575352);
+  padding: 25px 30px;
+}
+
+.title {
+  position: absolute;
+  top: 145px;
+  font-size: 45px;
+  color: #c7c7c7;
+  font-weight: 500;
+}
+
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+} */
+/* .FirstName {
+  position: absolute;
+  right: 750px;
+  top: 150px;
+  margin: 10px;
+  height: 30px;
+  width: 200px;
+} */
+
+/* .LastName {
+  position: absolute;
+  right: 540px;
+  top: 150px;
+  margin: 10px;
+  height: 30px;
+  width: 200px;
+} */
+
+/* .Email {
+  position: absolute;
+  right: 750px;
+  top: 200px;
+  margin: 10px;
+  height: 30px;
+  width: 200px;
+} */

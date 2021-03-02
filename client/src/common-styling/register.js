@@ -1,9 +1,12 @@
 import styled from "styled-components";
 
 const Registration = styled.div`
-  position: absolute;
-  right: 700px;
-  top: 200px;
+  &.register {
+    position: absolute;
+    right: 700px;
+    top: 100px;
+    color: white;
+  }
 `;
 
 export default Registration;
