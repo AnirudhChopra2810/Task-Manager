@@ -45,10 +45,11 @@ exports.updateTodo = async (req, res) => {
 
     if (!user) return res.send("User not found");
 
-    const updateTodo = await Todo.findOneAndUpdate({
+    console.log(req.body.Todo);
+    const findTodo = await Todo.findOne({
       Key: verify.id,
-      Todo: req.body.Todo,
     });
+
     return res.send({ success: true, message: "List updated successfully" });
   } catch (error) {
     console.log(error);
@@ -102,10 +103,9 @@ exports.getTodo = async (req, res) => {
 
     const todo = await Todo.find({ Key: verify.id });
 
-    console.log(todo);
-
     res.send({
       Todo: todo,
+      id: verify.id,
     });
   } catch (error) {
     console.log(error);

@@ -29,8 +29,6 @@ const Login = () => {
         localStorage.setItem("token", JSON.stringify(response.data.token));
         localStorage.setItem("id", JSON.stringify(response.data.id));
         setCredentials({
-          Email: Email,
-          Password: Password,
           id: response.data.id,
         });
         history.push("/");

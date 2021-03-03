@@ -13,10 +13,11 @@ import Button from "react-bootstrap/Button";
 import uuid from "react-uuid";
 
 const TextArea = () => {
-  const [credentials] = useContext(CredentialsContext);
+  const [credentials, setCredentials] = useContext(CredentialsContext);
   const [todoList, setTodoList] = useState([]);
   const [Todo, setTodoText] = useState("");
   const [edit, setEditText] = useState(false);
+  const [editId] = useState(0);
   const [Index, setIndex] = useState(0);
 
   useEffect(async () => {
@@ -29,12 +30,12 @@ const TextArea = () => {
       headers: { Authorization: `Bearer ${token}` },
     };
 
-    console.log("i worked 4");
-
     if (todoList === undefined) {
       setTodoList([]);
     } else {
       let todoList = await axios.get(url, config).then((res) => {
+        console.log(res.data.id);
+        setCredentials({ id: res.data.id });
         setTodoList(res.data.Todo);
       });
     }
@@ -86,6 +87,7 @@ const TextArea = () => {
     //For editing the text.
 
     setTodoText(Todo);
+
     setEditText(true);
     todoList.map((items) => {
       if (Todo === items.Todo) {
@@ -140,11 +142,11 @@ const TextArea = () => {
           Todo: Todo,
           key: credentials.id,
         };
+
         let todos = todoList;
         todos[Index] = updatedItem;
         setTodoList(todos);
         setTodoText("");
-        setEditText(false);
 
         const token = localStorage.getItem("token");
 
@@ -165,6 +167,7 @@ const TextArea = () => {
       } else {
         alert("Input Field Or Date Field Is Empty");
       }
+      setEditText(false);
     }
   };
 
@@ -277,33 +280,5 @@ const TextArea = () => {
     </div>
   );
 };
-//   //For editing the text.
-//   if (this.state.editText === true) {
-//     if (this.state.text !== "") {
-//       let todos = this.state.todoList;
-//       todos.map((items) => {
-//         if (this.state.key === items.key) {
-//           const updatedItem = {
-//             Todo: this.state.Todo,
-//             Date: this.state.Date,
-//             Key: this.state.Key,
-//           };
-//           let indexOf = todos.findIndex((items) => {
-//             return items.Key === this.state.Key;
-//           });
-//           todos[indexOf] = updatedItem;
-
-//           this.setState({
-//             todoList: todos,
-//             editText: false,
-//           });
-
-//
-//         }
-//       });
-//     } else {
-//       alert("Input Field Or Date Field Is Empty");
-//     }
-//   } else
 
 export default TextArea;
