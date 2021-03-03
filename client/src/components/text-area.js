@@ -17,8 +17,9 @@ const TextArea = () => {
   const [todoList, setTodoList] = useState([]);
   const [Todo, setTodoText] = useState("");
   const [edit, setEditText] = useState(false);
-  const [editId] = useState(0);
+  const [editTodo, setEditTodo] = useState("");
   const [Index, setIndex] = useState(0);
+  let count = 0;
 
   useEffect(async () => {
     const url = `http://localhost:3000/getList`;
@@ -87,6 +88,7 @@ const TextArea = () => {
     //For editing the text.
 
     setTodoText(Todo);
+    setEditTodo(Todo);
 
     setEditText(true);
     todoList.map((items) => {
@@ -128,6 +130,7 @@ const TextArea = () => {
     if (edit === false) {
       console.log("i worked");
 
+      count++;
       const newItem = { Todo: Todo, Key: credentials.id };
       console.log(newItem);
       const newTodoList = [...todoList, newItem];
@@ -155,7 +158,14 @@ const TextArea = () => {
         };
 
         axios
-          .post(`http://localhost:3000/updateList`, updatedItem, config)
+          .post(
+            `http://localhost:3000/updateList`,
+            {
+              Todo: Todo,
+              EditTodo: editTodo,
+            },
+            config
+          )
           .then(
             (response) => {
               console.log(credentials.id);
