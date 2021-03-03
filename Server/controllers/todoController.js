@@ -23,6 +23,7 @@ exports.addTodo = async (req, res) => {
     const todoList = await Todo.create({
       Todo: req.body.Todo,
       Key: req.body.Key,
+      Date: req.body.Date,
     });
 
     return res.send({ success: true, message: "List updated successfully" }); // default status is 200

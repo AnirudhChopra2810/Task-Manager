@@ -19,7 +19,7 @@ const TextArea = () => {
   const [edit, setEditText] = useState(false);
   const [editTodo, setEditTodo] = useState("");
   const [Index, setIndex] = useState(0);
-  let count = 0;
+  const [date, setDate] = useState("");
 
   useEffect(async () => {
     const url = `http://localhost:3000/getList`;
@@ -128,10 +128,7 @@ const TextArea = () => {
     }
 
     if (edit === false) {
-      console.log("i worked");
-
-      count++;
-      const newItem = { Todo: Todo, Key: credentials.id };
+      const newItem = { Todo: Todo, Key: credentials.id, Date: date };
       console.log(newItem);
       const newTodoList = [...todoList, newItem];
       setTodoList(newTodoList);
@@ -181,6 +178,49 @@ const TextArea = () => {
     }
   };
 
+  const createTodo = () => {
+    return todoList.map((items) => {
+      console.log(items);
+      return (
+        <Card
+          key={uuid()}
+          className="noteCard mx-4 my-4 "
+          style={{ width: "700px", backgroundColor: "#3d3e40" }}
+          name={Todo}
+        >
+          <Card.Body>
+            <Card.Title style={{ color: "white" }}>Note</Card.Title>
+            <hr />
+            <Card.Text style={{ color: "white" }}>{items.Todo}</Card.Text>
+            <Card.Text style={{ color: "white" }}>{items.Date}</Card.Text>
+
+            <Button
+              variant="secondary"
+              onClick={(e) => {
+                e.preventDefault();
+                let name = items.Todo;
+                deleteText(name);
+              }}
+            >
+              Delete
+            </Button>
+            <Button
+              variant="secondary mx-3"
+              style={{ width: "70px" }}
+              onClick={(e) => {
+                e.preventDefault();
+                let name = items.Todo;
+                editText(name);
+              }}
+            >
+              Edit
+            </Button>
+          </Card.Body>
+        </Card>
+      );
+    });
+  };
+
   return (
     <div>
       <NavBar />
@@ -222,6 +262,20 @@ const TextArea = () => {
         >
           {edit ? `Save Note` : `Add Note`}
         </Button>
+        <input
+          style={{
+            height: "40px",
+            width: "180px",
+            backgroundColor: "#696c70",
+            position: "absolute",
+            top: "180px",
+            left: "130px",
+          }}
+          onChange={(el) => {
+            setDate(el.target.value);
+          }}
+          type="datetime-local"
+        />
       </div>
 
       <Lists>
@@ -238,6 +292,7 @@ const TextArea = () => {
                 <Card.Title style={{ color: "white" }}>Note</Card.Title>
                 <hr />
                 <Card.Text style={{ color: "white" }}>{items.Todo}</Card.Text>
+                <Card.Text style={{ color: "white" }}>{items.Date}</Card.Text>
 
                 <Button
                   variant="secondary"
