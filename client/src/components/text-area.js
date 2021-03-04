@@ -1,16 +1,16 @@
 import React, { useContext, useState, useEffect } from "react";
 import NavBar from "./nav-bar";
+import List from "./list";
 import axios from "axios";
 import InputField from "../common-styling/textarea";
-import Buttons from "../common-styling/button";
 import Lists from "../common-styling/list";
 import { Divider } from "../../node_modules/semantic-ui-react";
 import Image from "../common-styling/image";
 import image from "../shopping-list.svg";
 import { CredentialsContext } from "../components/app";
-import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import uuid from "react-uuid";
+import Expiry from "./expiryCard";
 
 const TextArea = () => {
   const [credentials, setCredentials] = useContext(CredentialsContext);
@@ -84,13 +84,14 @@ const TextArea = () => {
     alert("Successfully Deleted");
   };
 
-  const editText = (Todo) => {
+  const editText = (Todo, date) => {
     //For editing the text.
 
     setTodoText(Todo);
     setEditTodo(Todo);
-
+    setDate(date);
     setEditText(true);
+
     todoList.map((items) => {
       if (Todo === items.Todo) {
         setIndex(
@@ -123,7 +124,8 @@ const TextArea = () => {
     e.preventDefault();
     //for adding new card.
 
-    if (!Todo) {
+    console.log(date);
+    if (Todo === "" || date === "") {
       return alert("Input Field Or Date Field Is Empty");
     }
 
@@ -133,92 +135,49 @@ const TextArea = () => {
       const newTodoList = [...todoList, newItem];
       setTodoList(newTodoList);
       setTodoText("");
+      setDate("");
       postTodo(newItem);
       return;
     } else {
-      if (Todo !== "") {
-        console.log(todoList);
-        const updatedItem = {
-          Todo: Todo,
-          key: credentials.id,
-        };
+      console.log(todoList);
+      const updatedItem = {
+        Todo: Todo,
+        key: credentials.id,
+        Date: date,
+      };
 
-        let todos = todoList;
-        todos[Index] = updatedItem;
-        setTodoList(todos);
-        setTodoText("");
+      let todos = todoList;
+      todos[Index] = updatedItem;
+      setTodoList(todos);
+      setTodoText("");
+      setDate("");
 
-        const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
-        const config = {
-          headers: { Authorization: `Bearer ${token}` },
-        };
+      const config = {
+        headers: { Authorization: `Bearer ${token}` },
+      };
 
-        axios
-          .post(
-            `http://localhost:3000/updateList`,
-            {
-              Todo: Todo,
-              EditTodo: editTodo,
-            },
-            config
-          )
-          .then(
-            (response) => {
-              console.log(credentials.id);
-            },
-            (error) => {
-              console.log(error);
-            }
-          );
-      } else {
-        alert("Input Field Or Date Field Is Empty");
-      }
-      setEditText(false);
+      axios
+        .post(
+          `http://localhost:3000/updateList`,
+          {
+            Todo: Todo,
+            EditTodo: editTodo,
+          },
+          config
+        )
+        .then(
+          (response) => {
+            console.log(credentials.id);
+          },
+          (error) => {
+            console.log(error);
+          }
+        );
     }
-  };
-
-  const createTodo = () => {
-    return todoList.map((items) => {
-      console.log(items);
-      return (
-        <Card
-          key={uuid()}
-          className="noteCard mx-4 my-4 "
-          style={{ width: "700px", backgroundColor: "#3d3e40" }}
-          name={Todo}
-        >
-          <Card.Body>
-            <Card.Title style={{ color: "white" }}>Note</Card.Title>
-            <hr />
-            <Card.Text style={{ color: "white" }}>{items.Todo}</Card.Text>
-            <Card.Text style={{ color: "white" }}>{items.Date}</Card.Text>
-
-            <Button
-              variant="secondary"
-              onClick={(e) => {
-                e.preventDefault();
-                let name = items.Todo;
-                deleteText(name);
-              }}
-            >
-              Delete
-            </Button>
-            <Button
-              variant="secondary mx-3"
-              style={{ width: "70px" }}
-              onClick={(e) => {
-                e.preventDefault();
-                let name = items.Todo;
-                editText(name);
-              }}
-            >
-              Edit
-            </Button>
-          </Card.Body>
-        </Card>
-      );
-    });
+    setEditText(false);
+    return;
   };
 
   return (
@@ -281,42 +240,23 @@ const TextArea = () => {
       <Lists>
         {todoList.map((items) => {
           console.log(items);
+          let d1 = new Date(items.Date);
+          console.log(d1);
+          let d2 = new Date();
+          console.log(d2);
+
+          if (d2 >= d1 && d2.getTime() >= d1.getTime()) {
+            return <Expiry />;
+          }
           return (
-            <Card
+            <List
               key={uuid()}
               className="noteCard mx-4 my-4 "
               style={{ width: "700px", backgroundColor: "#3d3e40" }}
-              name={Todo}
-            >
-              <Card.Body>
-                <Card.Title style={{ color: "white" }}>Note</Card.Title>
-                <hr />
-                <Card.Text style={{ color: "white" }}>{items.Todo}</Card.Text>
-                <Card.Text style={{ color: "white" }}>{items.Date}</Card.Text>
-
-                <Button
-                  variant="secondary"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    let name = items.Todo;
-                    deleteText(name);
-                  }}
-                >
-                  Delete
-                </Button>
-                <Button
-                  variant="secondary mx-3"
-                  style={{ width: "70px" }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    let name = items.Todo;
-                    editText(name);
-                  }}
-                >
-                  Edit
-                </Button>
-              </Card.Body>
-            </Card>
+              items={items}
+              editText={editText}
+              deleteText={deleteText}
+            />
           );
         })}
       </Lists>
