@@ -1,0 +1,20 @@
+.animation {
+  width: 300px;
+  color: white;
+  font-weight: bold;
+  position: absolute;
+  top: 10px;
+  animation-name: heading;
+  animation-duration: 2s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes heading {
+  from {
+    top: -60px;
+  }
+  to {
+    top: -5px;
+    color: wheat;
+  }
+}

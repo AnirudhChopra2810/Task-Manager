@@ -44,6 +44,9 @@ const Register = () => {
 
   return (
     <div className="container">
+      <div className="welcome">
+        <h1>Welcome To SignUp Page</h1>
+      </div>
       <div className="title">
         <h3>Register</h3>
       </div>
@@ -78,7 +81,7 @@ const Register = () => {
           />
         </Form.Group>
 
-        <Button variant="secondary" type="submit">
+        <Button variant="success" type="submit">
           Submit
         </Button>
       </Form>

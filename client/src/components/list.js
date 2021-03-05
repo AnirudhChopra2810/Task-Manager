@@ -19,7 +19,7 @@ const List = (props) => {
         <Card.Text style={{ color: "white" }}>{props.items.Todo}</Card.Text>
         <Card.Text style={{ color: "white" }}>{props.items.Date}</Card.Text>
         <Button
-          variant="secondary"
+          variant="danger"
           onClick={(e) => {
             e.preventDefault();
             let name = props.items.Todo;
@@ -28,9 +28,9 @@ const List = (props) => {
           }}
         >
           Delete
-        </Button>{" "}
+        </Button>
         <Button
-          variant="secondary mx-3"
+          variant="primary mx-3"
           style={{ width: "70px" }}
           onClick={(e) => {
             e.preventDefault();

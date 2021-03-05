@@ -11,6 +11,7 @@ import { CredentialsContext } from "../components/app";
 import Button from "react-bootstrap/Button";
 import uuid from "react-uuid";
 import Expiry from "./expiryCard";
+import "./styles.css";
 
 const TextArea = () => {
   const [credentials, setCredentials] = useContext(CredentialsContext);
@@ -183,14 +184,14 @@ const TextArea = () => {
   return (
     <div>
       <NavBar />
-      <div>
+      <div className="animation">
         <h3
           style={{
-            color: "grey",
             position: "absolute",
             top: "75px",
             left: "20px",
           }}
+          className="heading"
         >
           Add Your Notes Here!!
         </h3>
@@ -215,8 +216,9 @@ const TextArea = () => {
             top: "180px",
             left: "20px",
           }}
+          className="button"
+          variant="success"
           type="submit"
-          variant="secondary"
           onClick={addItem}
         >
           {edit ? `Save Note` : `Add Note`}
@@ -224,11 +226,14 @@ const TextArea = () => {
         <input
           style={{
             height: "40px",
-            width: "180px",
-            backgroundColor: "#696c70",
+            width: "200px",
+            backgroundColor: "#464a46",
             position: "absolute",
             top: "180px",
             left: "130px",
+            borderRadius: "20px",
+            padding: "20px",
+            borderColor: "#9c9c9c",
           }}
           onChange={(el) => {
             setDate(el.target.value);
@@ -246,7 +251,13 @@ const TextArea = () => {
           console.log(d2);
 
           if (d2 >= d1 && d2.getTime() >= d1.getTime()) {
-            return <Expiry />;
+            return (
+              <Expiry
+                items={items}
+                editText={editText}
+                deleteText={deleteText}
+              />
+            );
           }
           return (
             <List

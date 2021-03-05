@@ -22,9 +22,14 @@ const NavBar = () => {
         Task Manager
       </h1>
       <Button
-        variant="secondary"
+        variant="danger"
         type="submit"
-        style={{ position: "absolute", right: "30px", height: "30px" }}
+        style={{
+          position: "absolute",
+          right: "30px",
+          height: "30px",
+          color: "white",
+        }}
         onClick={logout}
       >
         Log Out

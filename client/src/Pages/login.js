@@ -6,6 +6,7 @@ import "../Pages/styles.css";
 import { CredentialsContext } from "../components/app";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import "./styles.css";
 
 const Login = () => {
   const [Email, setUsername] = useState("");
@@ -40,6 +41,9 @@ const Login = () => {
 
   return (
     <div className="container">
+      <div className="welcome">
+        <h1>Welcome To Login Page</h1>
+      </div>
       <div className="title">
         <h3>Login</h3>
       </div>
@@ -74,7 +78,7 @@ const Login = () => {
           />
         </Form.Group>
 
-        <Button variant="secondary" type="submit">
+        <Button variant="success" type="submit">
           Login
         </Button>
       </Form>

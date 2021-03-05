@@ -7,6 +7,26 @@
   width: 200px;
 } */
 
+.welcome {
+  width: 350px;
+  color: white;
+  font-weight: bold;
+  position: absolute;
+
+  animation-name: heading;
+  animation-duration: 3s;
+  animation-fill-mode: forwards;
+}
+@keyframes heading {
+  from {
+    top: 0px;
+  }
+  to {
+    top: 110px;
+    color: grey;
+  }
+}
+
 .container {
   display: flex;
   justify-content: center;
