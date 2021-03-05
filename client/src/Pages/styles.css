@@ -12,6 +12,7 @@
   color: white;
   font-weight: bold;
   position: absolute;
+  left: 530px;
 
   animation-name: heading;
   animation-duration: 3s;
