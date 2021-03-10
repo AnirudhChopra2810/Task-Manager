@@ -27,10 +27,10 @@ const Register = () => {
         alert("You are successfully registered");
 
         localStorage.setItem("token", JSON.stringify(response.data.token));
+        localStorage.setItem("id", JSON.stringify(response.data.id));
 
         setCredentials({
-          Email: Email,
-          Password: Password,
+          token: response.data.token,
           id: response.data.id,
         });
         history.push("/");

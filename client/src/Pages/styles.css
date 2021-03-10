@@ -14,11 +14,11 @@
   position: absolute;
   left: 530px;
 
-  animation-name: heading;
-  animation-duration: 3s;
+  animation-name: welcome;
+  animation-duration: 1.6s;
   animation-fill-mode: forwards;
 }
-@keyframes heading {
+@keyframes welcome {
   from {
     top: 0px;
   }

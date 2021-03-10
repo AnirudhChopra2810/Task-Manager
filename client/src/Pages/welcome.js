@@ -6,11 +6,14 @@ import TextArea from "../components/text-area";
 
 export default function Welcome() {
   const [credentials, setCredentials] = useContext(CredentialsContext);
+  console.log(credentials);
+  const token = localStorage.getItem("token");
+
   return (
     <div>
       <Center>
-        {!credentials && <h1> Welcome</h1>}
-        {!credentials && (
+        {token === null && <h1> Welcome</h1>}
+        {token === null && (
           <Link
             to="/register"
             style={{ position: "absolute", right: "35px", top: "60px" }}
@@ -19,7 +22,7 @@ export default function Welcome() {
           </Link>
         )}
         <br />
-        {!credentials && (
+        {token === null && (
           <Link
             to="/login"
             style={{ position: "absolute", right: "45px", top: "90px" }}
@@ -28,7 +31,7 @@ export default function Welcome() {
           </Link>
         )}
       </Center>
-      {credentials && <TextArea />}
+      {token && <TextArea />}
     </div>
   );
 }

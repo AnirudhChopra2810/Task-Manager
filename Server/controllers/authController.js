@@ -41,15 +41,15 @@ exports.logIn = async (req, res, next) => {
   const Email = req.body.Email;
   const Password = req.body.Password;
 
-  if (!Email || !Password) {
-    return next(res.status(400).send("Please provide email or password"));
-  }
-
   const user = await User.findOne({ Email }).select("+Password");
 
   if (!user || !(await user.correctPassword(Password, user.Password))) {
-    return;
+    console.log("i worked");
+
+    return next(res.status(403));
   }
+
+  console.log("i worked again");
   const token = signToken(user._id);
   res.status(200).json({
     status: "success",

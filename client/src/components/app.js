@@ -9,8 +9,7 @@ export const CredentialsContext = React.createContext();
 
 //app component
 const App = () => {
-  let token = localStorage.getItem("token");
-  const credentialsState = useState(token);
+  const credentialsState = useState(null);
 
   return (
     <div>

@@ -11,31 +11,41 @@ import "./styles.css";
 const Login = () => {
   const [Email, setUsername] = useState("");
   const [Password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [credentials, setCredentials] = useContext(CredentialsContext);
   const history = useHistory();
 
   const Login = (e) => {
     e.preventDefault();
 
+    if (Email === "" || Password === "") {
+      alert("Username Or Password Field Cannot Be Empty");
+      return;
+    }
+
     axios
       .post(`http://localhost:3000/logIn`, { Email, Password })
       .then((response) => {
-        alert("You are successfully LoggedIn");
-        console.log(response.data);
-        localStorage.setItem(
-          "login",
-          JSON.stringify({ Email: Email, Password: Password })
-        );
+        // if (!response) {
+        //   alert("wtf");
+        //   return;
+        //   // const { message } = await response.json();
+        //   // throw Error(message);
+        // }
+
+        console.log(response);
 
         localStorage.setItem("token", JSON.stringify(response.data.token));
         localStorage.setItem("id", JSON.stringify(response.data.id));
         setCredentials({
-          id: response.data.id,
+          token: response.data.token,
         });
         history.push("/");
       })
       .catch((error) => {
+        alert("username or password invalid");
         console.log(error);
+        setError(error.message);
       });
   };
 
@@ -47,6 +57,7 @@ const Login = () => {
       <div className="title">
         <h3>Login</h3>
       </div>
+
       <Form onSubmit={Login}>
         <Form.Group controlId="formBasicEmail">
           <Form.Label
